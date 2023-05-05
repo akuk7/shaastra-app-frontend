@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import {
+  BrowserRouter,
+  Router,
+  Route,
+  useNavigate,
+  Routes,
+} from "react-router-dom";
+import "./App.css";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import TaskForm from "./combonents/Taskform";
+import EditForm from "./combonents/EditForm";
+import TaskList from "./combonents/TaskList";
 
-function App() {
+const Home = (props) => {
+  const navigate = useNavigate();
+  const GET_TASKS = gql`
+    query GetTasks {
+      getTasks {
+        id
+        title
+        description
+        completed
+      }
+    }
+  `;
+  const { loading, error, data, refetch } = useQuery(GET_TASKS);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Task List</h1>
+      <div>
+        <button className="add-btn" onClick={() => navigate("/newform")}>
+          Add TAsk
+        </button>
+      </div>
+      <TaskList data={data} refetch={refetch} />
     </div>
   );
+};
+function App(props) {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path="editform" element={<EditForm />} />
+        <Route path="newform" element={<TaskForm />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
-
 export default App;
