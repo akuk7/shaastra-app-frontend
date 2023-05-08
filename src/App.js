@@ -29,12 +29,23 @@ const Home = (props) => {
   if (error) return <p>Error: {error.message}</p>;
   return (
     <div>
-      <h1>Task List</h1>
-      <div>
+      <div className="navbar">
+        <h1 className="header">Task List</h1>
+
         <button className="add-btn" onClick={() => navigate("/newform")}>
-          Add TAsk
+          +
         </button>
+
+        <div className="internal-links">
+          <a className="link" href="#Incomplete-tasks">
+            Incomplete
+          </a>
+          <a className="link" href="#completed-tasks">
+            complete
+          </a>
+        </div>
       </div>
+
       <TaskList data={data} refetch={refetch} />
     </div>
   );

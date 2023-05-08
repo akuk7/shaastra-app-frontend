@@ -1,12 +1,25 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useState } from "react";
+import "./Form.css";
 import { useNavigate } from "react-router-dom";
+import { FormControl, FormLabel } from "@chakra-ui/react";
 function TaskForm(props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
   // const [completion, setCompletion] = useState("incomplete");
   const navigate = useNavigate();
+  const GET_TASKS = gql`
+    query GetTasks {
+      getTasks {
+        id
+        title
+        description
+        completed
+      }
+    }
+  `;
+  const { data, refetch } = useQuery(GET_TASKS);
 
   const CREATE_TASK = gql`
     mutation CreateTask($title: String!, $description: String!) {
@@ -23,59 +36,45 @@ function TaskForm(props) {
       .then(() => {
         setTitle("");
         setDescription("");
+        refetch();
       })
       .catch((error) => console.log(error));
+
     navigate("/");
   };
 
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <label>
-          Title:
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </label>
-        <br />
-        <label>
-          Description:
-          <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </label>
-        <br />
-        {/* <label>
-          Completion:
-          <br />
-          <label>
+    <body className="route">
+      <div className="form">
+        <form onSubmit={onSubmit}>
+          <FormControl isRequired>
+            <FormLabel className="label">Title</FormLabel>
+
             <input
-              type="radio"
-              value="incomplete"
-              checked={completion === "incomplete"}
-              onChange={(e) => setCompletion(e.target.value)}
+              type="text"
+              value={title}
+              placeholder="Title"
+              required
+              onChange={(e) => setTitle(e.target.value)}
             />
-            Incomplete
-          </label>
-          <br />
-          <label>
-            <input
-              type="radio"
-              value="complete"
-              checked={completion === "complete"}
-              onChange={(e) => setCompletion(e.target.value)}
-            />
-            Complete
-          </label>
-        </label>
-        <br /> */}
-        <button type="submit">Add Task</button>
-      </form>
-    </div>
+          </FormControl>
+          <FormControl>
+            <FormLabel className="label">Description:</FormLabel>
+
+            <textarea
+              id="desc"
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            ></textarea>
+          </FormControl>
+
+          <button className="form-button" type="submit">
+            Add Task
+          </button>
+        </form>
+      </div>
+    </body>
   );
 }
 export default TaskForm;
